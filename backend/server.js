@@ -20,7 +20,18 @@ app.use(cors({ origin: allowedOrigins }))
 app.use(express.json())
 
 app.get('/api/health', (req, res) => {
-  res.json({ ok: true })
+  res.json({
+    ok: true,
+    env: {
+      ADMIN_USER: Boolean(process.env.ADMIN_USER),
+      ADMIN_PASSWORD_HASH: Boolean(process.env.ADMIN_PASSWORD_HASH),
+      DEV_USER: Boolean(process.env.DEV_USER),
+      DEV_PASSWORD_HASH: Boolean(process.env.DEV_PASSWORD_HASH),
+      JWT_SECRET: Boolean(process.env.JWT_SECRET),
+      MONGODB_URI: Boolean(process.env.MONGODB_URI),
+      CLOUDINARY_CLOUD_NAME: Boolean(process.env.CLOUDINARY_CLOUD_NAME),
+    },
+  })
 })
 
 app.use('/api/auth', authRouter)
