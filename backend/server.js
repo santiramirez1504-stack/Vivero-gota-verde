@@ -1,7 +1,6 @@
 import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
-import crypto from 'node:crypto'
 import { connectDB } from './src/config/db.js'
 import authRouter from './src/routes/auth.routes.js'
 import uploadsRouter from './src/routes/uploads.routes.js'
@@ -20,27 +19,8 @@ const allowedOrigins = (process.env.CLIENT_ORIGIN ?? 'http://localhost:5173')
 app.use(cors({ origin: allowedOrigins }))
 app.use(express.json())
 
-function fingerprint(value) {
-  if (!value) return null
-  return {
-    length: value.length,
-    sha256_8: crypto.createHash('sha256').update(value).digest('hex').slice(0, 8),
-  }
-}
-
 app.get('/api/health', (req, res) => {
-  res.json({
-    ok: true,
-    env: {
-      ADMIN_USER: fingerprint(process.env.ADMIN_USER),
-      ADMIN_PASSWORD_HASH: fingerprint(process.env.ADMIN_PASSWORD_HASH),
-      DEV_USER: fingerprint(process.env.DEV_USER),
-      DEV_PASSWORD_HASH: fingerprint(process.env.DEV_PASSWORD_HASH),
-      JWT_SECRET: Boolean(process.env.JWT_SECRET),
-      MONGODB_URI: Boolean(process.env.MONGODB_URI),
-      CLOUDINARY_CLOUD_NAME: Boolean(process.env.CLOUDINARY_CLOUD_NAME),
-    },
-  })
+  res.json({ ok: true })
 })
 
 app.use('/api/auth', authRouter)
