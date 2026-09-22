@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel del desarrollador | Vivero Gota Verde</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body class="min-h-screen bg-verde-50 text-verde-900 antialiased">
+
+  <!-- ===================== LOGIN ===================== -->
+  <div data-login-view class="flex min-h-screen items-center justify-center px-4">
+    <div class="w-full max-w-sm rounded-2xl border border-verde-100 bg-white p-8 shadow-xl">
+      <div class="flex items-center gap-2 font-display text-xl font-extrabold text-verde-700">
+        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-verde-900 text-white">🔧</span>
+        Panel del Desarrollador
+      </div>
+      <p class="mt-2 text-sm text-verde-800/60">Acceso exclusivo — no compartir con el cliente.</p>
+
+      <form data-login-form class="mt-6 space-y-4" novalidate>
+        <div>
+          <label for="usuario" class="block text-sm font-medium text-verde-800">Usuario</label>
+          <input id="usuario" name="usuario" type="text" required autocomplete="username"
+            class="mt-1.5 w-full rounded-xl border border-verde-200 px-4 py-2.5 text-sm focus:border-verde-500 focus:outline-none focus:ring-2 focus:ring-verde-200" />
+        </div>
+        <div>
+          <label for="contrasena" class="block text-sm font-medium text-verde-800">Contraseña</label>
+          <input id="contrasena" name="contrasena" type="password" required autocomplete="current-password"
+            class="mt-1.5 w-full rounded-xl border border-verde-200 px-4 py-2.5 text-sm focus:border-verde-500 focus:outline-none focus:ring-2 focus:ring-verde-200" />
+        </div>
+
+        <p data-login-error class="hidden text-sm font-medium text-red-600" role="alert"></p>
+
+        <button type="submit"
+          class="w-full rounded-full bg-verde-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-verde-800">
+          Ingresar
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================== DASHBOARD ===================== -->
+  <div data-dashboard-view class="hidden min-h-screen">
+    <header class="flex items-center justify-between border-b border-verde-100 bg-white px-6 py-4">
+      <div class="flex items-center gap-2 font-display font-extrabold text-verde-700">
+        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-verde-900 text-sm text-white">🔧</span>
+        Panel del Desarrollador
+      </div>
+      <button data-logout type="button"
+        class="rounded-full border border-verde-200 px-4 py-2 text-sm font-semibold text-verde-700 hover:bg-verde-100">
+        Cerrar sesión
+      </button>
+    </header>
+
+    <main class="mx-auto max-w-2xl px-6 py-12">
+      <p class="text-sm text-verde-800/70">Sesión: <span data-dev-user class="font-semibold"></span></p>
+
+      <section class="mt-6 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
+        <h2 class="font-display text-xl font-bold text-verde-900">Estado del sitio</h2>
+        <p class="mt-1 text-sm text-verde-800/60">
+          Usa este interruptor para desactivar temporalmente el acceso público al sitio — por ejemplo,
+          mientras gestionas el pago mensual del servicio con tu cliente.
+        </p>
+
+        <div class="mt-5 flex flex-wrap items-center gap-4">
+          <span data-status-badge class="rounded-full px-4 py-1.5 text-sm font-semibold">Cargando...</span>
+          <button data-toggle-button type="button" data-enabled="true"
+            class="rounded-full px-6 py-2.5 text-sm font-semibold text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50">
+            Desactivar sitio
+          </button>
+        </div>
+
+        <form data-message-form class="mt-6 space-y-2">
+          <label for="mensaje" class="block text-sm font-medium text-verde-800">Mensaje de mantenimiento</label>
+          <textarea id="mensaje" name="message" rows="3"
+            class="w-full rounded-xl border border-verde-200 px-4 py-2.5 text-sm focus:border-verde-500 focus:outline-none focus:ring-2 focus:ring-verde-200"
+            placeholder="Estamos realizando mejoras. Vuelve pronto."></textarea>
+          <div class="flex items-center gap-3">
+            <button type="submit"
+              class="rounded-full bg-verde-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-verde-700">
+              Guardar mensaje
+            </button>
+            <p data-message-status class="hidden text-sm font-medium text-verde-700"></p>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="/src/dev/main.js"></script>
+</body>
+</html>

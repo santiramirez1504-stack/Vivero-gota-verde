@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de administración | Vivero Gota Verde</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body class="min-h-screen bg-verde-50 text-verde-900 antialiased">
+
+  <!-- ===================== LOGIN ===================== -->
+  <div data-login-view class="flex min-h-screen items-center justify-center px-4">
+    <div class="w-full max-w-sm rounded-2xl border border-verde-100 bg-white p-8 shadow-xl">
+      <div class="flex items-center gap-2 font-display text-xl font-extrabold text-verde-700">
+        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-verde-600 text-white">🌿</span>
+        Panel Gota Verde
+      </div>
+      <p class="mt-2 text-sm text-verde-800/60">Acceso exclusivo para administración del sitio.</p>
+
+      <form data-login-form class="mt-6 space-y-4" novalidate>
+        <div>
+          <label for="usuario" class="block text-sm font-medium text-verde-800">Usuario</label>
+          <input id="usuario" name="usuario" type="text" required autocomplete="username"
+            class="mt-1.5 w-full rounded-xl border border-verde-200 px-4 py-2.5 text-sm focus:border-verde-500 focus:outline-none focus:ring-2 focus:ring-verde-200" />
+        </div>
+        <div>
+          <label for="contrasena" class="block text-sm font-medium text-verde-800">Contraseña</label>
+          <input id="contrasena" name="contrasena" type="password" required autocomplete="current-password"
+            class="mt-1.5 w-full rounded-xl border border-verde-200 px-4 py-2.5 text-sm focus:border-verde-500 focus:outline-none focus:ring-2 focus:ring-verde-200" />
+        </div>
+
+        <p data-login-error class="hidden text-sm font-medium text-red-600" role="alert"></p>
+
+        <button type="submit"
+          class="w-full rounded-full bg-verde-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-verde-700">
+          Ingresar
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================== DASHBOARD ===================== -->
+  <div data-dashboard-view class="hidden min-h-screen">
+    <header class="flex items-center justify-between border-b border-verde-100 bg-white px-6 py-4">
+      <div class="flex items-center gap-2 font-display font-extrabold text-verde-700">
+        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-verde-600 text-sm text-white">🌿</span>
+        Panel Gota Verde
+      </div>
+      <button data-logout type="button"
+        class="rounded-full border border-verde-200 px-4 py-2 text-sm font-semibold text-verde-700 hover:bg-verde-100">
+        Cerrar sesión
+      </button>
+    </header>
+
+    <main class="mx-auto max-w-5xl px-6 py-12">
+      <div class="text-center">
+        <h1 class="font-display text-2xl font-bold text-verde-900">
+          ¡Bienvenido, <span data-admin-user></span>!
+        </h1>
+        <p class="mt-2 text-verde-800/70">
+          Próximos pasos: editor de catálogo/precios conectado a esta subida, y el interruptor de mantenimiento.
+        </p>
+      </div>
+
+      <section class="mt-10 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
+        <h2 class="font-display text-xl font-bold text-verde-900">Subir imágenes y videos</h2>
+        <p class="mt-1 text-sm text-verde-800/60">
+          Sube archivos a Cloudinary y copia la URL para usarla en el catálogo o la galería
+          (la conexión automática con el catálogo llega en el siguiente módulo).
+        </p>
+
+        <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <input
+            data-upload-input
+            type="file"
+            accept="image/*,video/*"
+            class="block w-full text-sm text-verde-800 file:mr-4 file:rounded-full file:border-0 file:bg-verde-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-verde-700 hover:file:bg-verde-200"
+          />
+          <button
+            data-upload-button
+            type="button"
+            disabled
+            class="inline-flex shrink-0 items-center justify-center rounded-full bg-verde-600 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-verde-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Subir
+          </button>
+        </div>
+
+        <p data-upload-status class="mt-3 hidden text-sm font-medium"></p>
+
+        <div data-upload-history class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"></div>
+      </section>
+
+      <section class="mt-8 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
+        <h2 class="font-display text-xl font-bold text-verde-900">Catálogo y precios</h2>
+        <p class="mt-1 text-sm text-verde-800/60">
+          Agrega, edita o elimina las plantas y macetas del catálogo público. Pega aquí la URL de
+          Cloudinary de la sección anterior para usar una foto real.
+        </p>
+
+        <form data-product-form class="mt-6 grid gap-4 sm:grid-cols-2" novalidate>
+          <input type="hidden" data-product-id-input value="" />
+
+          <div>
+            <label for="prod-nombre" class="block text-sm font-medium text-verde-800">Nombre</label>
+            <input id="prod-nombre" name="name" type="text" required
+              class="mt-1.5 w-full rounded-xl border border-verde-200 px-4 py-2.5 text-sm focus:border-verde-500 focus:outline-none focus:ring-2 focus:ring-verde-200" />
+          </div>
+
+          <div>
+            <label for="prod-categoria" class="block text-sm font-medium text-verde-800">Categoría</label>
+            <select id="prod-categoria" name="category" required
+              class="mt-1.5 w-full rounded-xl border border-verde-200 px-4 py-2.5 text-sm focus:border-verde-500 focus:outline-none focus:ring-2 focus:ring-verde-200">
+              <option value="arboles">Árboles</option>
+              <option value="arbustos">Arbustos</option>
+              <option value="ornamentales">Ornamentales</option>
+              <option value="macetas">Macetas</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="prod-precio" class="block text-sm font-medium text-verde-800">Precio</label>
+            <input id="prod-precio" name="price" type="number" min="0" step="0.01" required
+              class="mt-1.5 w-full rounded-xl border border-verde-200 px-4 py-2.5 text-sm focus:border-verde-500 focus:outline-none focus:ring-2 focus:ring-verde-200" />
+          </div>
+
+          <div>
+            <label for="prod-unidad" class="block text-sm font-medium text-verde-800">Unidad</label>
+            <input id="prod-unidad" name="unit" type="text" placeholder="unidad"
+              class="mt-1.5 w-full rounded-xl border border-verde-200 px-4 py-2.5 text-sm focus:border-verde-500 focus:outline-none focus:ring-2 focus:ring-verde-200" />
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="prod-descripcion" class="block text-sm font-medium text-verde-800">Descripción</label>
+            <textarea id="prod-descripcion" name="description" rows="2"
+              class="mt-1.5 w-full rounded-xl border border-verde-200 px-4 py-2.5 text-sm focus:border-verde-500 focus:outline-none focus:ring-2 focus:ring-verde-200"></textarea>
+          </div>
+
+          <div>
+            <label for="prod-imagen" class="block text-sm font-medium text-verde-800">URL de imagen (Cloudinary)</label>
+            <input id="prod-imagen" name="imageUrl" type="url" placeholder="https://res.cloudinary.com/..."
+              class="mt-1.5 w-full rounded-xl border border-verde-200 px-4 py-2.5 text-sm focus:border-verde-500 focus:outline-none focus:ring-2 focus:ring-verde-200" />
+          </div>
+
+          <div>
+            <label for="prod-emoji" class="block text-sm font-medium text-verde-800">Emoji de respaldo</label>
+            <input id="prod-emoji" name="emoji" type="text" placeholder="🌿" maxlength="4"
+              class="mt-1.5 w-full rounded-xl border border-verde-200 px-4 py-2.5 text-sm focus:border-verde-500 focus:outline-none focus:ring-2 focus:ring-verde-200" />
+            <p class="mt-1 text-xs text-verde-800/50">Se usa solo si no hay URL de imagen.</p>
+          </div>
+
+          <div class="sm:col-span-2 flex items-center gap-3">
+            <button type="submit"
+              class="rounded-full bg-verde-600 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-verde-700">
+              <span data-product-submit-label>Agregar producto</span>
+            </button>
+            <button type="button" data-product-cancel-edit class="hidden rounded-full border border-verde-200 px-6 py-2.5 text-sm font-semibold text-verde-700 hover:bg-verde-100">
+              Cancelar edición
+            </button>
+          </div>
+
+          <p data-product-status class="sm:col-span-2 hidden text-sm font-medium"></p>
+        </form>
+
+        <div data-product-list class="mt-8 divide-y divide-verde-100 border-t border-verde-100"></div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="/src/admin/main.js"></script>
+</body>
+</html>
