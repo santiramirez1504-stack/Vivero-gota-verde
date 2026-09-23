@@ -1,7 +1,9 @@
 import { CATEGORIES } from './data/categories.js'
+import { formatCOP } from './utils/currency.js'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 const STORAGE_KEY = 'gotaverde_cart'
+const CUSTOMER_STORAGE_KEY = 'gotaverde_customer'
 // TODO: reemplazar por el número de WhatsApp real del vivero (con código de país, sin +, ni espacios)
 const WHATSAPP_NUMBER = '10000000000'
 
@@ -15,6 +17,9 @@ const cartItemsEl = document.querySelector('[data-cart-items]')
 const cartCountEl = document.querySelector('[data-cart-count]')
 const cartTotalEl = document.querySelector('[data-cart-total]')
 const cartWhatsappEl = document.querySelector('[data-cart-whatsapp]')
+const cartNameEl = document.querySelector('[data-cart-name]')
+const cartPhoneEl = document.querySelector('[data-cart-phone]')
+const cartErrorEl = document.querySelector('[data-cart-error]')
 
 if (filtersEl && gridEl) {
   let activeCategory = 'todos'
@@ -24,6 +29,7 @@ if (filtersEl && gridEl) {
   renderFilters()
   renderCart()
   loadProducts()
+  loadCustomer()
 
   filtersEl.addEventListener('click', (event) => {
     const button = event.target.closest('[data-filter]')
@@ -51,6 +57,7 @@ if (filtersEl && gridEl) {
   cartButton?.addEventListener('click', openCart)
   cartClose?.addEventListener('click', closeCart)
   cartOverlay?.addEventListener('click', closeCart)
+  cartWhatsappEl?.addEventListener('click', sendOrder)
 
   async function loadProducts() {
     gridEl.innerHTML = `<p class="col-span-full py-10 text-center text-verde-800/60">Cargando catálogo...</p>`
@@ -82,7 +89,7 @@ if (filtersEl && gridEl) {
   }
 
   function formatPrice(value) {
-    return `$${value.toFixed(2)}`
+    return formatCOP(value)
   }
 
   function categoryLabel(id) {
@@ -165,12 +172,30 @@ if (filtersEl && gridEl) {
         : `<p class="text-sm text-verde-800/60 text-center py-10">Aún no agregas plantas a tu cotización.</p>`
     }
 
-    if (cartWhatsappEl) cartWhatsappEl.href = buildWhatsappLink(entries, total)
     saveCart()
   }
 
+  function loadCustomer() {
+    try {
+      const raw = localStorage.getItem(CUSTOMER_STORAGE_KEY)
+      if (!raw) return
+      const { name, phone } = JSON.parse(raw)
+      if (cartNameEl) cartNameEl.value = name ?? ''
+      if (cartPhoneEl) cartPhoneEl.value = phone ?? ''
+    } catch {
+      // sin datos guardados, el cliente los escribe de nuevo
+    }
+  }
+
+  function saveCustomer(name, phone) {
+    try {
+      localStorage.setItem(CUSTOMER_STORAGE_KEY, JSON.stringify({ name, phone }))
+    } catch {
+      // localStorage no disponible; no afecta el envío del pedido
+    }
+  }
+
   function buildWhatsappLink(entries, total) {
-    if (!entries.length) return `https://wa.me/${WHATSAPP_NUMBER}`
     const lines = entries.map((item) => `• ${item.qty} x ${item.product.name} (${formatPrice(item.product.price)})`)
     const message = [
       'Hola, quiero cotizar estas plantas:',
@@ -178,6 +203,56 @@ if (filtersEl && gridEl) {
       `Total estimado: ${formatPrice(total)}`,
     ].join('\n')
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
+  }
+
+  async function sendOrder() {
+    hideCartError()
+
+    const entries = Object.values(cart)
+    if (!entries.length) {
+      showCartError('Agrega al menos una planta a tu cotización.')
+      return
+    }
+
+    const name = cartNameEl?.value.trim()
+    const phone = cartPhoneEl?.value.trim()
+    if (!name || !phone) {
+      showCartError('Escribe tu nombre y teléfono para continuar.')
+      return
+    }
+
+    const total = entries.reduce((sum, item) => sum + item.qty * item.product.price, 0)
+    saveCustomer(name, phone)
+
+    try {
+      await fetch(`${API_URL}/api/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName: name,
+          customerPhone: phone,
+          items: entries.map((item) => ({
+            name: item.product.name,
+            price: item.product.price,
+            qty: item.qty,
+          })),
+        }),
+      })
+    } catch {
+      // Si falla el registro del pedido, igual dejamos que el cliente complete el envío por WhatsApp
+    }
+
+    window.open(buildWhatsappLink(entries, total), '_blank', 'noopener')
+  }
+
+  function showCartError(message) {
+    if (!cartErrorEl) return
+    cartErrorEl.textContent = message
+    cartErrorEl.classList.remove('hidden')
+  }
+
+  function hideCartError() {
+    cartErrorEl?.classList.add('hidden')
   }
 
   function addToCart(id) {

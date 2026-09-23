@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import Product from '../models/Product.js'
 import { requireAuth } from '../middleware/requireAuth.js'
+import { toCOPInt } from '../utils/money.js'
 
 const router = Router()
 
@@ -50,7 +51,7 @@ function sanitize(body) {
   return {
     name,
     category,
-    price: Number(price),
+    price: toCOPInt(price),
     unit: unit || 'unidad',
     description: description || '',
     imageUrl: imageUrl || '',

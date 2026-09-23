@@ -1,4 +1,6 @@
-import { PROJECTS, PROJECT_CATEGORIES } from './data/projects.js'
+import { PROJECT_CATEGORIES } from './data/projects.js'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
 const filtersEl = document.querySelector('[data-project-filters]')
 const gridEl = document.querySelector('[data-project-grid]')
@@ -17,9 +19,10 @@ if (filtersEl && gridEl) {
   let activeCategory = 'todos'
   let currentProject = null
   let currentIndex = 0
+  let projects = []
 
   renderFilters()
-  renderGrid()
+  loadProjects()
 
   filtersEl.addEventListener('click', (event) => {
     const button = event.target.closest('[data-filter]')
@@ -54,6 +57,18 @@ if (filtersEl && gridEl) {
     if (event.key === 'ArrowRight') step(1)
   })
 
+  async function loadProjects() {
+    gridEl.innerHTML = `<p class="col-span-full py-10 text-center text-verde-800/60">Cargando proyectos...</p>`
+    try {
+      const res = await fetch(`${API_URL}/api/projects`)
+      if (!res.ok) throw new Error()
+      projects = await res.json()
+      renderGrid()
+    } catch {
+      gridEl.innerHTML = `<p class="col-span-full py-10 text-center text-verde-800/60">No se pudieron cargar los proyectos en este momento.</p>`
+    }
+  }
+
   function categoryLabel(id) {
     return PROJECT_CATEGORIES.find((c) => c.id === id)?.label ?? id
   }
@@ -74,15 +89,25 @@ if (filtersEl && gridEl) {
 
   function renderGrid() {
     const items = activeCategory === 'todos'
-      ? PROJECTS
-      : PROJECTS.filter((p) => p.category === activeCategory)
+      ? projects
+      : projects.filter((p) => p.category === activeCategory)
+
+    if (!items.length) {
+      gridEl.innerHTML = `<p class="col-span-full py-10 text-center text-verde-800/60">Todavía no hay proyectos en esta categoría.</p>`
+      return
+    }
 
     gridEl.innerHTML = items.map((p) => {
       const hasVideo = p.media.some((m) => m.type === 'video')
+      const cover = p.media[0]
       return `
-        <button type="button" data-open-project="${p.id}" class="group overflow-hidden rounded-2xl border border-verde-100 bg-white text-left transition-shadow hover:shadow-lg">
-          <div class="relative flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-verde-100 to-verde-300 text-6xl">
-            ${p.cover}
+        <button type="button" data-open-project="${p._id}" class="group overflow-hidden rounded-2xl border border-verde-100 bg-white text-left transition-shadow hover:shadow-lg">
+          <div class="relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-gradient-to-br from-verde-100 to-verde-300 text-6xl">
+            ${cover
+              ? cover.type === 'video'
+                ? `<video src="${cover.url}" class="h-full w-full object-cover" muted playsinline></video>`
+                : `<img src="${cover.url}" alt="${p.title}" class="h-full w-full object-cover" />`
+              : '🌿'}
             ${hasVideo ? '<span class="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full bg-black/50 px-2 py-1 text-xs text-white">▶ Video</span>' : ''}
           </div>
           <div class="p-5">
@@ -96,7 +121,7 @@ if (filtersEl && gridEl) {
   }
 
   function openLightbox(id) {
-    currentProject = PROJECTS.find((p) => p.id === id)
+    currentProject = projects.find((p) => p._id === id)
     if (!currentProject) return
     currentIndex = 0
     if (lightboxTitle) lightboxTitle.textContent = currentProject.title
@@ -117,6 +142,7 @@ if (filtersEl && gridEl) {
   function step(delta) {
     if (!currentProject) return
     const total = currentProject.media.length
+    if (!total) return
     currentIndex = (currentIndex + delta + total) % total
     renderMedia()
     renderThumbs()
@@ -125,12 +151,14 @@ if (filtersEl && gridEl) {
   function renderMedia() {
     if (!currentProject || !lightboxMedia) return
     const media = currentProject.media[currentIndex]
+    if (!media) {
+      lightboxMedia.innerHTML = `<span class="text-8xl">🌿</span>`
+      return
+    }
     if (media.type === 'video') {
-      lightboxMedia.innerHTML = `<video src="${media.src}" controls class="max-h-full max-w-full"></video>`
-    } else if (media.src) {
-      lightboxMedia.innerHTML = `<img src="${media.src}" alt="${currentProject.title}" class="max-h-full max-w-full object-contain" />`
+      lightboxMedia.innerHTML = `<video src="${media.url}" controls class="max-h-full max-w-full"></video>`
     } else {
-      lightboxMedia.innerHTML = `<span class="text-8xl">${media.emoji}</span>`
+      lightboxMedia.innerHTML = `<img src="${media.url}" alt="${currentProject.title}" class="max-h-full max-w-full object-contain" />`
     }
   }
 
@@ -140,10 +168,12 @@ if (filtersEl && gridEl) {
       <button
         type="button"
         data-thumb="${index}"
-        class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg text-2xl transition-colors ${
-          index === currentIndex ? 'bg-verde-600 text-white' : 'bg-verde-100 text-verde-700 hover:bg-verde-200'
+        class="flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg text-2xl transition-colors ${
+          index === currentIndex ? 'ring-2 ring-verde-600' : 'bg-verde-100 text-verde-700 hover:bg-verde-200'
         }"
-      >${m.type === 'video' ? '▶' : (m.emoji ?? '🖼')}</button>
+      >${m.type === 'video'
+          ? `<video src="${m.url}" class="h-full w-full object-cover" muted playsinline></video>`
+          : `<img src="${m.url}" alt="" class="h-full w-full object-cover" />`}</button>
     `).join('')
   }
 }

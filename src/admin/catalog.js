@@ -1,4 +1,5 @@
 import { getToken } from './session.js'
+import { formatCOP, parseCOPInput, attachCurrencyMask } from '../utils/currency.js'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
@@ -17,6 +18,7 @@ const statusEl = document.querySelector('[data-product-status]')
 const listEl = document.querySelector('[data-product-list]')
 
 if (form && listEl) {
+  attachCurrencyMask(form.elements.price)
   loadProducts()
 
   form.addEventListener('submit', async (event) => {
@@ -33,7 +35,7 @@ if (form && listEl) {
     const payload = {
       name: formData.get('name'),
       category: formData.get('category'),
-      price: formData.get('price'),
+      price: parseCOPInput(formData.get('price')),
       unit: formData.get('unit') || 'unidad',
       description: formData.get('description'),
       imageUrl: formData.get('imageUrl'),
@@ -117,7 +119,7 @@ if (form && listEl) {
           <p class="font-semibold text-verde-900">${p.name}</p>
           <p class="text-xs text-verde-800/60">${CATEGORY_LABELS[p.category] ?? p.category}</p>
         </div>
-        <p class="font-display font-bold text-verde-700">$${Number(p.price).toFixed(2)} <span class="text-xs font-normal text-verde-800/50">/ ${p.unit}</span></p>
+        <p class="font-display font-bold text-verde-700">${formatCOP(p.price)} <span class="text-xs font-normal text-verde-800/50">/ ${p.unit}</span></p>
         <div class="flex gap-2">
           <button type="button" data-edit-product="${p._id}" class="rounded-full border border-verde-200 px-4 py-1.5 text-xs font-semibold text-verde-700 hover:bg-verde-100">
             Editar
@@ -137,7 +139,7 @@ if (form && listEl) {
     idInput.value = product._id
     form.elements.name.value = product.name
     form.elements.category.value = product.category
-    form.elements.price.value = product.price
+    form.elements.price.value = Number(product.price).toLocaleString('es-CO')
     form.elements.unit.value = product.unit
     form.elements.description.value = product.description
     form.elements.imageUrl.value = product.imageUrl

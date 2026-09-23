@@ -1,6 +1,12 @@
 import '../style.css'
 import './uploads.js'
 import './catalog.js'
+import './orders.js'
+import './reports.js'
+import './losses.js'
+import './inventory.js'
+import './invoices.js'
+import './projects.js'
 import { getToken, setToken, clearToken } from './session.js'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'

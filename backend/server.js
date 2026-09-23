@@ -7,6 +7,12 @@ import uploadsRouter from './src/routes/uploads.routes.js'
 import productsRouter from './src/routes/products.routes.js'
 import devAuthRouter from './src/routes/devAuth.routes.js'
 import settingsRouter from './src/routes/settings.routes.js'
+import ordersRouter from './src/routes/orders.routes.js'
+import lossesRouter from './src/routes/losses.routes.js'
+import reportsRouter from './src/routes/reports.routes.js'
+import inventoryRouter from './src/routes/inventory.routes.js'
+import invoicesRouter from './src/routes/invoices.routes.js'
+import projectsRouter from './src/routes/projects.routes.js'
 
 await connectDB()
 
@@ -28,6 +34,12 @@ app.use('/api/uploads', uploadsRouter)
 app.use('/api/products', productsRouter)
 app.use('/api/dev-auth', devAuthRouter)
 app.use('/api/settings', settingsRouter)
+app.use('/api/orders', ordersRouter)
+app.use('/api/losses', lossesRouter)
+app.use('/api/reports', reportsRouter)
+app.use('/api/inventory', inventoryRouter)
+app.use('/api/invoices', invoicesRouter)
+app.use('/api/projects', projectsRouter)
 
 const port = process.env.PORT || 4000
 app.listen(port, () => {
