@@ -25,6 +25,7 @@ const paymentSchema = new mongoose.Schema(
 const invoiceSchema = new mongoose.Schema(
   {
     invoiceNumber: { type: Number, required: true, unique: true },
+    cashier: { type: String, default: '' },
     customerName: { type: String, required: true, trim: true, default: 'Consumidor final' },
     customerPhone: { type: String, default: '' },
     customerEmail: { type: String, default: '' },

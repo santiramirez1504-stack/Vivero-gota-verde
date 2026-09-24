@@ -1,5 +1,6 @@
 import { getToken } from './session.js'
 import { formatCOP, parseCOPInput, attachCurrencyMask } from '../utils/currency.js'
+import { generateInvoicePdf } from './invoicePdf.js'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
@@ -45,6 +46,7 @@ const summaryChangeEl = document.querySelector('[data-pos-summary-change]')
 
 const submitButton = document.querySelector('[data-pos-submit]')
 const posStatusEl = document.querySelector('[data-pos-status]')
+const posDownloadPdfButton = document.querySelector('[data-pos-download-pdf]')
 
 const filtersFrom = document.querySelector('[data-filter-from]')
 const filtersTo = document.querySelector('[data-filter-to]')
@@ -65,6 +67,8 @@ if (kpisEl && tableBodyEl) {
   let cart = [] // { inventoryItemId, name, unitPrice, availableStock, quantity, discountPercent }
   let payments = []
   let currentPage = 1
+  let currentDetailInvoice = null
+  let lastCreatedInvoice = null
 
   init()
 
@@ -182,6 +186,9 @@ if (kpisEl && tableBodyEl) {
   })
 
   submitButton?.addEventListener('click', submitInvoice)
+  posDownloadPdfButton?.addEventListener('click', () => {
+    if (lastCreatedInvoice) generateInvoicePdf(lastCreatedInvoice)
+  })
 
   ;[filtersFrom, filtersTo, filtersPayment, filtersStatus].forEach((el) => {
     el?.addEventListener('change', () => loadInvoices(1))
@@ -215,6 +222,11 @@ if (kpisEl && tableBodyEl) {
   detailBody?.addEventListener('click', async (event) => {
     const voidButton = event.target.closest('[data-detail-void]')
     const deleteButton = event.target.closest('[data-detail-delete]')
+    const pdfButton = event.target.closest('[data-detail-pdf]')
+
+    if (pdfButton && currentDetailInvoice) {
+      generateInvoicePdf(currentDetailInvoice)
+    }
 
     if (voidButton) {
       if (!window.confirm('¿Anular esta factura? El stock vendido se devolverá al inventario.')) return
@@ -512,6 +524,8 @@ if (kpisEl && tableBodyEl) {
       }
 
       showPosStatus(`Factura #${data.invoiceNumber} registrada correctamente.`, 'success')
+      lastCreatedInvoice = data
+      posDownloadPdfButton?.classList.remove('hidden')
       resetPos()
       loadKpis()
       loadInventoryForSearch()
@@ -628,10 +642,11 @@ if (kpisEl && tableBodyEl) {
   }
 
   function renderDetail(inv) {
+    currentDetailInvoice = inv
     const date = new Date(inv.createdAt).toLocaleString('es', { dateStyle: 'long', timeStyle: 'short' })
     detailBody.innerHTML = `
       <p class="font-display text-lg font-bold text-verde-900">Factura #${inv.invoiceNumber}</p>
-      <p class="text-verde-800/60">${date}</p>
+      <p class="text-verde-800/60">${date}${inv.cashier ? ` · Cajero: ${inv.cashier}` : ''}</p>
       <div class="mt-3 rounded-xl bg-verde-50 p-3">
         <p><span class="font-medium">Cliente:</span> ${inv.customerName}</p>
         ${inv.customerPhone ? `<p><span class="font-medium">Teléfono:</span> ${inv.customerPhone}</p>` : ''}
@@ -672,6 +687,10 @@ if (kpisEl && tableBodyEl) {
       <p class="mt-3 text-sm">
         Estado: <span class="font-semibold">${STATUS_LABELS[inv.status] ?? inv.status}</span>
       </p>
+
+      <button type="button" data-detail-pdf="${inv._id}" class="mt-4 w-full rounded-full border border-verde-300 px-5 py-2.5 text-sm font-semibold text-verde-700 hover:bg-verde-100">
+        Descargar factura en PDF
+      </button>
 
       ${inv.status !== 'anulada'
         ? `
@@ -732,5 +751,6 @@ if (kpisEl && tableBodyEl) {
 
   function hidePosStatus() {
     posStatusEl?.classList.add('hidden')
+    posDownloadPdfButton?.classList.add('hidden')
   }
 }

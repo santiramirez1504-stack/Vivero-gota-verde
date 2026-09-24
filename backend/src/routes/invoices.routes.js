@@ -168,6 +168,7 @@ router.post('/', requireAuth, async (req, res) => {
       const [created] = await Invoice.create(
         [{
           invoiceNumber,
+          cashier: req.admin?.usuario || '',
           customerName: customerName || 'Consumidor final',
           customerPhone: customerPhone || '',
           customerEmail: customerEmail || '',
