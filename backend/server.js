@@ -12,6 +12,7 @@ import lossesRouter from './src/routes/losses.routes.js'
 import reportsRouter from './src/routes/reports.routes.js'
 import inventoryRouter from './src/routes/inventory.routes.js'
 import invoicesRouter from './src/routes/invoices.routes.js'
+import expensesRouter from './src/routes/expenses.routes.js'
 import projectsRouter from './src/routes/projects.routes.js'
 import homeContentRouter from './src/routes/homeContent.routes.js'
 
@@ -40,6 +41,7 @@ app.use('/api/losses', lossesRouter)
 app.use('/api/reports', reportsRouter)
 app.use('/api/inventory', inventoryRouter)
 app.use('/api/invoices', invoicesRouter)
+app.use('/api/expenses', expensesRouter)
 app.use('/api/projects', projectsRouter)
 app.use('/api/home-content', homeContentRouter)
 

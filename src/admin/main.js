@@ -6,6 +6,7 @@ import './reports.js'
 import './losses.js'
 import './inventory.js'
 import './invoices.js'
+import './expenses.js'
 import './projects.js'
 import { getToken, setToken, clearToken } from './session.js'
 
