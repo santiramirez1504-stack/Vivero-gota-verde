@@ -135,14 +135,14 @@ if (kpisEl && tableBodyEl) {
         showPosStatus(`Solo hay ${line.availableStock} unidades disponibles de "${line.name}".`, 'error')
       }
       line.quantity = Math.max(qty, 1)
-      renderCart()
+      updateCartLine(line.inventoryItemId)
     }
 
     if (discountInputEl) {
       const line = cart.find((l) => l.inventoryItemId === discountInputEl.dataset.cartDiscount)
       if (!line) return
       line.discountPercent = Math.min(Math.max(Number(discountInputEl.value) || 0, 0), 100)
-      renderCart()
+      updateCartLine(line.inventoryItemId)
     }
   })
 
@@ -340,7 +340,7 @@ if (kpisEl && tableBodyEl) {
       cartBodyEl.innerHTML = cart.map((line) => {
         const subtotal = line.unitPrice * line.quantity * (1 - line.discountPercent / 100)
         return `
-          <tr class="border-b border-verde-100">
+          <tr class="border-b border-verde-100" data-cart-row="${line.inventoryItemId}">
             <td class="py-2 pr-2">${line.name}</td>
             <td class="py-2 pr-2">
               <input type="number" min="1" max="${line.availableStock}" value="${line.quantity}" data-cart-qty="${line.inventoryItemId}"
@@ -351,7 +351,7 @@ if (kpisEl && tableBodyEl) {
               <input type="number" min="0" max="100" value="${line.discountPercent}" data-cart-discount="${line.inventoryItemId}"
                 class="w-16 rounded-lg border border-verde-200 px-2 py-1 text-sm" />
             </td>
-            <td class="py-2 pr-2 font-semibold text-verde-900">${formatCOP(subtotal)}</td>
+            <td class="py-2 pr-2 font-semibold text-verde-900" data-cart-subtotal="${line.inventoryItemId}">${formatCOP(subtotal)}</td>
             <td class="py-2">
               <button type="button" data-cart-remove="${line.inventoryItemId}" class="text-red-500 hover:text-red-700" aria-label="Quitar">✕</button>
             </td>
@@ -360,6 +360,17 @@ if (kpisEl && tableBodyEl) {
       }).join('')
     }
 
+    updateSummary()
+  }
+
+  // Actualiza solo el subtotal de una fila (sin redibujar la tabla completa) para
+  // que el input de cantidad/descuento no pierda el foco mientras el usuario escribe.
+  function updateCartLine(inventoryItemId) {
+    const line = cart.find((l) => l.inventoryItemId === inventoryItemId)
+    if (!line) return
+    const subtotal = line.unitPrice * line.quantity * (1 - line.discountPercent / 100)
+    const subtotalEl = cartBodyEl.querySelector(`[data-cart-subtotal="${inventoryItemId}"]`)
+    if (subtotalEl) subtotalEl.textContent = formatCOP(subtotal)
     updateSummary()
   }
 
