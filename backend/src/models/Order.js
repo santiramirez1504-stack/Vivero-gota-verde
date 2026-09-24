@@ -20,6 +20,9 @@ const orderSchema = new mongoose.Schema(
       enum: ['pendiente', 'preparando', 'listo', 'entregado'],
       default: 'pendiente',
     },
+    // Marca si este pedido ya sumó al historial persistente de clientes frecuentes,
+    // para no volver a contarlo si el estado se mueve de "entregado" a otro y regresa
+    countedForCustomer: { type: Boolean, default: false },
   },
   { timestamps: true },
 )

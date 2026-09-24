@@ -16,7 +16,7 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="flex h-16 items-center justify-between">
         <a href="#inicio" class="flex items-center gap-2 font-display font-extrabold text-xl text-verde-700">
-          <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-verde-600 text-white">🌿</span>
+          <span data-site-logo class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-verde-600 text-white">🌿</span>
           Gota Verde
         </a>
 
@@ -58,19 +58,20 @@
 
   <main>
     <!-- ===================== HERO ===================== -->
-    <section id="inicio" class="relative overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28">
+    <section id="inicio" data-hero-background class="relative overflow-hidden bg-cover bg-center pt-32 pb-20 sm:pt-40 sm:pb-28">
+      <div data-hero-background-overlay class="pointer-events-none absolute inset-0 hidden bg-verde-50/70"></div>
       <div class="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-verde-200/60 blur-3xl"></div>
       <div class="pointer-events-none absolute top-40 -left-32 h-72 w-72 rounded-full bg-tierra-100 blur-3xl"></div>
 
       <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
         <div>
           <span class="inline-flex items-center gap-2 rounded-full bg-verde-100 px-4 py-1.5 text-sm font-semibold text-verde-700">
-            🌱 Vivero &amp; paisajismo en tu ciudad
+            🌱 <span data-hero-badge>Vivero &amp; paisajismo en tu ciudad</span>
           </span>
-          <h1 class="mt-6 font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight text-verde-900">
+          <h1 data-hero-title class="mt-6 font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight text-verde-900">
             Dale vida a tus espacios con <span class="text-verde-600">plantas y diseño</span> que enamoran
           </h1>
-          <p class="mt-6 text-lg text-verde-800/80 max-w-xl">
+          <p data-hero-description class="mt-6 text-lg text-verde-800/80 max-w-xl">
             En Gota Verde cultivamos árboles, arbustos y ornamentales de calidad, y transformamos jardines
             con proyectos de paisajismo hechos a la medida de tu hogar o negocio.
           </p>
@@ -84,7 +85,7 @@
             </a>
           </div>
 
-          <dl class="mt-12 grid grid-cols-3 gap-6 max-w-md">
+          <dl data-stats-container class="mt-12 grid grid-cols-3 gap-6 max-w-md">
             <div>
               <dt class="sr-only">Años de experiencia</dt>
               <dd class="font-display text-3xl font-extrabold text-verde-700">10+</dd>
@@ -104,12 +105,12 @@
         </div>
 
         <div class="relative">
-          <div class="aspect-[4/5] w-full rounded-[2.5rem] bg-gradient-to-br from-verde-400 via-verde-600 to-verde-800 shadow-2xl flex items-center justify-center overflow-hidden">
+          <div data-hero-image class="aspect-[4/5] w-full rounded-[2.5rem] bg-gradient-to-br from-verde-400 via-verde-600 to-verde-800 shadow-2xl flex items-center justify-center overflow-hidden">
             <span class="text-[10rem] leading-none select-none drop-shadow-xl">🪴</span>
           </div>
           <div class="absolute -bottom-6 -left-6 rounded-2xl bg-white p-5 shadow-xl w-56">
-            <p class="font-display font-bold text-verde-700">Envío y asesoría</p>
-            <p class="mt-1 text-sm text-verde-800/70">Te acompañamos en cada etapa, desde la elección hasta el mantenimiento.</p>
+            <p data-hero-floating-title class="font-display font-bold text-verde-700">Envío y asesoría</p>
+            <p data-hero-floating-description class="mt-1 text-sm text-verde-800/70">Te acompañamos en cada etapa, desde la elección hasta el mantenimiento.</p>
           </div>
         </div>
       </div>
@@ -326,8 +327,8 @@
     <section class="py-20 sm:py-24">
       <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div class="rounded-3xl bg-verde-700 px-8 py-14 sm:px-16 text-center shadow-xl">
-          <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-white">¿Listo para transformar tu espacio?</h2>
-          <p class="mt-4 text-verde-100 max-w-xl mx-auto">
+          <h2 data-cta-title class="font-display text-3xl sm:text-4xl font-extrabold text-white">¿Listo para transformar tu espacio?</h2>
+          <p data-cta-description class="mt-4 text-verde-100 max-w-xl mx-auto">
             Cuéntanos tu proyecto y te ayudamos a elegir las plantas y el diseño ideal.
           </p>
           <a href="#contacto" class="mt-8 inline-flex items-center rounded-full bg-white px-7 py-3.5 text-base font-semibold text-verde-700 hover:bg-verde-50 transition-colors">
@@ -343,10 +344,10 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
       <div>
         <a href="#inicio" class="flex items-center gap-2 font-display font-extrabold text-xl text-white">
-          <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-verde-500 text-white">🌿</span>
+          <span data-site-logo class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-verde-500 text-white">🌿</span>
           Gota Verde
         </a>
-        <p class="mt-4 text-sm text-verde-200/80">Vivero y paisajismo con más de 10 años cultivando espacios verdes.</p>
+        <p data-footer-tagline class="mt-4 text-sm text-verde-200/80">Vivero y paisajismo con más de 10 años cultivando espacios verdes.</p>
       </div>
 
       <div>
@@ -361,18 +362,18 @@
       <div>
         <h4 class="font-display font-semibold text-white">Contacto</h4>
         <ul class="mt-4 space-y-2 text-sm text-verde-200/80">
-          <li>📍 Tu ciudad, país</li>
-          <li>📞 +00 000 000 000</li>
-          <li>✉️ contacto@viverogotaverde.com</li>
+          <li>📍 <span data-footer-address>Tu ciudad, país</span></li>
+          <li>📞 <span data-footer-phone>+00 000 000 000</span></li>
+          <li>✉️ <span data-footer-email>contacto@viverogotaverde.com</span></li>
         </ul>
       </div>
 
       <div>
         <h4 class="font-display font-semibold text-white">Síguenos</h4>
         <ul class="mt-4 space-y-2 text-sm text-verde-200/80">
-          <li><a href="#" class="hover:text-white">Instagram</a></li>
-          <li><a href="#" class="hover:text-white">Facebook</a></li>
-          <li><a href="#" class="hover:text-white">WhatsApp</a></li>
+          <li><a data-footer-instagram href="#" target="_blank" rel="noopener" class="hover:text-white">Instagram</a></li>
+          <li><a data-footer-facebook href="#" target="_blank" rel="noopener" class="hover:text-white">Facebook</a></li>
+          <li><a data-footer-whatsapp href="#" target="_blank" rel="noopener" class="hover:text-white">WhatsApp</a></li>
         </ul>
       </div>
     </div>

@@ -44,15 +44,54 @@
 
   <!-- ===================== DASHBOARD ===================== -->
   <div data-dashboard-view class="hidden min-h-screen">
-    <header class="sticky top-0 z-40 flex items-center justify-between border-b border-verde-100 bg-white px-6 py-4 shadow-sm">
-      <div class="flex items-center gap-2 font-display font-extrabold text-verde-700">
-        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-verde-600 text-sm text-white">🌿</span>
-        Panel Gota Verde
+    <header class="sticky top-0 z-40 border-b border-verde-100 bg-white shadow-sm">
+      <div class="flex h-16 items-center justify-between gap-4 px-4 sm:px-6">
+        <a href="#admin-subir" class="flex shrink-0 items-center gap-2 font-display font-extrabold text-verde-700">
+          <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-verde-600 text-sm text-white">🌿</span>
+          Panel Gota Verde
+        </a>
+
+        <nav class="hidden flex-1 items-center gap-4 overflow-x-auto whitespace-nowrap text-sm font-medium lg:flex">
+          <a href="#admin-subir" class="hover:text-verde-600 transition-colors">Imágenes</a>
+          <a href="#admin-catalogo" class="hover:text-verde-600 transition-colors">Catálogo</a>
+          <a href="#admin-pedidos" class="hover:text-verde-600 transition-colors">Pedidos</a>
+          <a href="#admin-clientes" class="hover:text-verde-600 transition-colors">Clientes</a>
+          <a href="#admin-estadisticas" class="hover:text-verde-600 transition-colors">Estadísticas</a>
+          <a href="#admin-merma" class="hover:text-verde-600 transition-colors">Merma</a>
+          <a href="#admin-inventario" class="hover:text-verde-600 transition-colors">Inventario</a>
+          <a href="#admin-facturacion" class="hover:text-verde-600 transition-colors">Facturación</a>
+          <a href="#admin-proyectos" class="hover:text-verde-600 transition-colors">Proyectos</a>
+        </nav>
+
+        <div class="flex shrink-0 items-center gap-2">
+          <button data-logout type="button"
+            class="rounded-full border border-verde-200 px-4 py-2 text-sm font-semibold text-verde-700 hover:bg-verde-100">
+            Cerrar sesión
+          </button>
+          <button
+            data-admin-menu-button
+            aria-expanded="false"
+            aria-label="Abrir menú"
+            class="inline-flex items-center justify-center rounded-md p-2 text-verde-700 hover:bg-verde-100 lg:hidden"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
       </div>
-      <button data-logout type="button"
-        class="rounded-full border border-verde-200 px-4 py-2 text-sm font-semibold text-verde-700 hover:bg-verde-100">
-        Cerrar sesión
-      </button>
+
+      <div data-admin-mobile-menu class="hidden flex-col gap-1 border-t border-verde-100 px-4 pb-4 pt-2 lg:hidden">
+        <a href="#admin-subir" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-verde-100">Imágenes</a>
+        <a href="#admin-catalogo" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-verde-100">Catálogo</a>
+        <a href="#admin-pedidos" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-verde-100">Pedidos</a>
+        <a href="#admin-clientes" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-verde-100">Clientes</a>
+        <a href="#admin-estadisticas" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-verde-100">Estadísticas</a>
+        <a href="#admin-merma" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-verde-100">Merma</a>
+        <a href="#admin-inventario" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-verde-100">Inventario</a>
+        <a href="#admin-facturacion" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-verde-100">Facturación</a>
+        <a href="#admin-proyectos" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-verde-100">Proyectos</a>
+      </div>
     </header>
 
     <main class="mx-auto max-w-7xl px-6 py-12">
@@ -61,11 +100,11 @@
           ¡Bienvenido, <span data-admin-user></span>!
         </h1>
         <p class="mt-2 text-verde-800/70">
-          Próximos pasos: editor de catálogo/precios conectado a esta subida, y el interruptor de mantenimiento.
+          Usa el menú de arriba para moverte entre las secciones del panel.
         </p>
       </div>
 
-      <section class="mt-10 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
+      <section id="admin-subir" class="mt-10 scroll-mt-24 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
         <h2 class="font-display text-xl font-bold text-verde-900">Subir imágenes y videos</h2>
         <p class="mt-1 text-sm text-verde-800/60">
           Sube archivos a Cloudinary y copia la URL para usarla en el catálogo o la galería
@@ -94,7 +133,7 @@
         <div data-upload-history class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"></div>
       </section>
 
-      <section class="mt-8 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
+      <section id="admin-catalogo" class="mt-8 scroll-mt-24 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
         <h2 class="font-display text-xl font-bold text-verde-900">Catálogo y precios</h2>
         <p class="mt-1 text-sm text-verde-800/60">
           Agrega, edita o elimina las plantas y macetas del catálogo público. Pega aquí la URL de
@@ -168,7 +207,7 @@
         <div data-product-list class="mt-8 divide-y divide-verde-100 border-t border-verde-100"></div>
       </section>
 
-      <section class="mt-8 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
+      <section id="admin-pedidos" class="mt-8 scroll-mt-24 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 class="font-display text-xl font-bold text-verde-900">Pedidos</h2>
@@ -185,16 +224,28 @@
         <div data-orders-board class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"></div>
       </section>
 
-      <section class="mt-8 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
-        <h2 class="font-display text-xl font-bold text-verde-900">Clientes frecuentes</h2>
-        <p class="mt-1 text-sm text-verde-800/60">
-          Ordenados por quién más compra — ideal para ofrecerles promociones o descuentos.
-        </p>
+      <section id="admin-clientes" class="mt-8 scroll-mt-24 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="font-display text-xl font-bold text-verde-900">Clientes frecuentes</h2>
+            <p class="mt-1 text-sm text-verde-800/60">
+              Ordenados por quién más compra — ideal para ofrecerles promociones o descuentos.
+              Un cliente queda registrado aquí en cuanto se le marca un pedido como "Entregado", y no se
+              quita aunque después borres o edites ese pedido.
+            </p>
+          </div>
+          <button data-customers-reset type="button"
+            class="rounded-full border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50">
+            Reiniciar
+          </button>
+        </div>
+
+        <p data-customers-since class="mt-3 hidden text-xs text-verde-800/50"></p>
 
         <div data-customers-list class="mt-6 divide-y divide-verde-100 border-t border-verde-100"></div>
       </section>
 
-      <section class="mt-8 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
+      <section id="admin-estadisticas" class="mt-8 scroll-mt-24 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
         <h2 class="font-display text-xl font-bold text-verde-900">Estadísticas y reportes</h2>
         <p class="mt-1 text-sm text-verde-800/60">Métricas clave para tomar mejores decisiones sobre el vivero.</p>
 
@@ -216,7 +267,7 @@
         </div>
       </section>
 
-      <section class="mt-8 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
+      <section id="admin-merma" class="mt-8 scroll-mt-24 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
         <h2 class="font-display text-xl font-bold text-verde-900">Merma y pérdidas</h2>
         <p class="mt-1 text-sm text-verde-800/60">
           Registra plantas perdidas por plagas, clima o accidentes para conocer tu rentabilidad real.
@@ -272,7 +323,7 @@
         <div data-loss-list class="mt-8 divide-y divide-verde-100 border-t border-verde-100"></div>
       </section>
 
-      <section class="mt-8 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
+      <section id="admin-inventario" class="mt-8 scroll-mt-24 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
         <h2 class="font-display text-xl font-bold text-verde-900">Inventario y stock</h2>
         <p class="mt-1 text-sm text-verde-800/60">
           Controla el stock de cada especie por etapa de crecimiento y su ficha técnica de cuidado.
@@ -369,7 +420,7 @@
         <div data-inventory-list class="mt-8 divide-y divide-verde-100 border-t border-verde-100"></div>
       </section>
 
-      <section class="mt-8 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
+      <section id="admin-facturacion" class="mt-8 scroll-mt-24 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 class="font-display text-xl font-bold text-verde-900">Facturación</h2>
@@ -541,7 +592,7 @@
         </div>
       </section>
 
-      <section class="mt-8 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
+      <section id="admin-proyectos" class="mt-8 scroll-mt-24 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
         <h2 class="font-display text-xl font-bold text-verde-900">Proyectos realizados</h2>
         <p class="mt-1 text-sm text-verde-800/60">
           Sube las fotos y videos de tus trabajos terminados para mostrarlos en la galería del sitio público.

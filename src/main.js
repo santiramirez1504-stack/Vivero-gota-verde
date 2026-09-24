@@ -1,5 +1,6 @@
 import './style.css'
 import './maintenance.js'
+import './homeContent.js'
 import './catalog.js'
 import './booking.js'
 import './gallery.js'

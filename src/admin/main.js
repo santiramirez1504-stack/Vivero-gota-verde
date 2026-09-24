@@ -17,8 +17,24 @@ const loginForm = document.querySelector('[data-login-form]')
 const loginError = document.querySelector('[data-login-error]')
 const logoutButton = document.querySelector('[data-logout]')
 const adminUserEl = document.querySelector('[data-admin-user]')
+const menuButton = document.querySelector('[data-admin-menu-button]')
+const mobileMenu = document.querySelector('[data-admin-mobile-menu]')
 
 init()
+
+menuButton?.addEventListener('click', () => {
+  const isOpen = mobileMenu.classList.toggle('flex')
+  mobileMenu.classList.toggle('hidden')
+  menuButton.setAttribute('aria-expanded', String(isOpen))
+})
+
+document.querySelectorAll('[data-admin-mobile-menu] a').forEach((link) => {
+  link.addEventListener('click', () => {
+    mobileMenu.classList.add('hidden')
+    mobileMenu.classList.remove('flex')
+    menuButton?.setAttribute('aria-expanded', 'false')
+  })
+})
 
 async function init() {
   const token = getToken()

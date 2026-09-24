@@ -13,6 +13,8 @@ const STATUSES = [
 const boardEl = document.querySelector('[data-orders-board]')
 const refreshButton = document.querySelector('[data-orders-refresh]')
 const customersEl = document.querySelector('[data-customers-list]')
+const customersResetButton = document.querySelector('[data-customers-reset]')
+const customersSinceEl = document.querySelector('[data-customers-since]')
 
 if (boardEl) {
   let orders = []
@@ -23,6 +25,22 @@ if (boardEl) {
   refreshButton?.addEventListener('click', () => {
     loadOrders()
     loadCustomers()
+  })
+
+  customersResetButton?.addEventListener('click', async () => {
+    if (!window.confirm('¿Reiniciar el conteo de clientes frecuentes? Se borrará todo el historial acumulado hasta ahora (los pedidos en sí no se ven afectados).')) return
+
+    const token = getToken()
+    try {
+      const res = await fetch(`${API_URL}/api/orders/customers`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) throw new Error()
+      loadCustomers()
+    } catch {
+      window.alert('No se pudo reiniciar el historial de clientes.')
+    }
   })
 
   boardEl.addEventListener('change', (event) => {
@@ -146,9 +164,18 @@ if (boardEl) {
 
   function renderCustomers(customers) {
     if (!customersEl) return
+
     if (!customers.length) {
-      customersEl.innerHTML = `<p class="py-6 text-center text-sm text-verde-800/60">Todavía no hay pedidos registrados.</p>`
+      customersEl.innerHTML = `<p class="py-6 text-center text-sm text-verde-800/60">Todavía no hay clientes registrados en este período.</p>`
+      customersSinceEl?.classList.add('hidden')
       return
+    }
+
+    if (customersSinceEl) {
+      const oldest = customers.reduce((min, c) => Math.min(min, new Date(c.trackingSince).getTime()), Infinity)
+      const date = new Date(oldest).toLocaleDateString('es', { day: '2-digit', month: 'long', year: 'numeric' })
+      customersSinceEl.textContent = `Acumulando desde el ${date}. Usa "Reiniciar" para empezar un período nuevo.`
+      customersSinceEl.classList.remove('hidden')
     }
 
     customersEl.innerHTML = customers.map((c) => `

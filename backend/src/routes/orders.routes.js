@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import Order from '../models/Order.js'
+import Customer from '../models/Customer.js'
 import { requireAuth } from '../middleware/requireAuth.js'
 
 const router = Router()
@@ -52,33 +53,33 @@ router.get('/', requireAuth, async (req, res) => {
   }
 })
 
-// Panel de administración: historial de clientes frecuentes
-// Solo cuenta pedidos "entregado" — un pedido pendiente o cancelado (eliminado) no debe inflar las estadísticas del cliente
+// Panel de administración: historial de clientes frecuentes.
+// Es un registro PERSISTENTE (colección Customer), no un cálculo en vivo sobre los pedidos:
+// una vez que un pedido se marca "entregado" el cliente queda guardado aquí y ya no se mueve
+// aunque el pedido original se edite o se borre después. Se reinicia manualmente (ver DELETE abajo).
 router.get('/customers', requireAuth, async (req, res) => {
   try {
-    const customers = await Order.aggregate([
-      { $match: { status: 'entregado' } },
-      {
-        $group: {
-          _id: '$customerPhone',
-          name: { $last: '$customerName' },
-          totalOrders: { $sum: 1 },
-          totalSpent: { $sum: '$total' },
-          lastOrderAt: { $max: '$createdAt' },
-        },
-      },
-      { $sort: { totalOrders: -1, totalSpent: -1 } },
-    ])
-
+    const customers = await Customer.find().sort({ totalOrders: -1, totalSpent: -1 })
     res.json(customers.map((c) => ({
-      phone: c._id,
+      phone: c.phone,
       name: c.name,
       totalOrders: c.totalOrders,
       totalSpent: c.totalSpent,
       lastOrderAt: c.lastOrderAt,
+      trackingSince: c.createdAt,
     })))
   } catch {
     res.status(500).json({ error: 'No se pudo obtener el historial de clientes' })
+  }
+})
+
+// Reinicia el conteo de clientes frecuentes (pensado para usarse semanalmente, a criterio del admin)
+router.delete('/customers', requireAuth, async (req, res) => {
+  try {
+    await Customer.deleteMany({})
+    res.json({ ok: true })
+  } catch {
+    res.status(500).json({ error: 'No se pudo reiniciar el historial de clientes' })
   }
 })
 
@@ -90,9 +91,29 @@ router.put('/:id', requireAuth, async (req, res) => {
   }
 
   try {
-    const order = await Order.findByIdAndUpdate(req.params.id, { status }, { new: true })
-    if (!order) return res.status(404).json({ error: 'Pedido no encontrado' })
-    res.json(order)
+    const existing = await Order.findById(req.params.id)
+    if (!existing) return res.status(404).json({ error: 'Pedido no encontrado' })
+
+    existing.status = status
+
+    // Solo se acumula la PRIMERA vez que un pedido llega a "entregado" en toda su vida
+    // (no basta con mirar el estado anterior: si pasa a otro estado y vuelve a "entregado"
+    // no debe volver a sumar) — de ahí la bandera countedForCustomer en vez de comparar estados.
+    if (status === 'entregado' && !existing.countedForCustomer) {
+      existing.countedForCustomer = true
+      await Customer.findOneAndUpdate(
+        { phone: existing.customerPhone },
+        {
+          $set: { name: existing.customerName, lastOrderAt: new Date() },
+          $inc: { totalOrders: 1, totalSpent: existing.total },
+        },
+        { upsert: true },
+      )
+    }
+
+    await existing.save()
+
+    res.json(existing)
   } catch {
     res.status(400).json({ error: 'No se pudo actualizar el pedido' })
   }

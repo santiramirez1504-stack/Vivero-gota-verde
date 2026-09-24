@@ -13,6 +13,7 @@ import reportsRouter from './src/routes/reports.routes.js'
 import inventoryRouter from './src/routes/inventory.routes.js'
 import invoicesRouter from './src/routes/invoices.routes.js'
 import projectsRouter from './src/routes/projects.routes.js'
+import homeContentRouter from './src/routes/homeContent.routes.js'
 
 await connectDB()
 
@@ -40,6 +41,7 @@ app.use('/api/reports', reportsRouter)
 app.use('/api/inventory', inventoryRouter)
 app.use('/api/invoices', invoicesRouter)
 app.use('/api/projects', projectsRouter)
+app.use('/api/home-content', homeContentRouter)
 
 const port = process.env.PORT || 4000
 app.listen(port, () => {

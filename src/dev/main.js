@@ -1,7 +1,8 @@
 import '../style.css'
+import './homeContent.js'
+import { getToken, setToken, clearToken } from './session.js'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
-const TOKEN_KEY = 'gotaverde_dev_token'
 
 const loginView = document.querySelector('[data-login-view]')
 const dashboardView = document.querySelector('[data-dashboard-view]')
@@ -18,12 +19,12 @@ const messageStatus = document.querySelector('[data-message-status]')
 init()
 
 async function init() {
-  const token = localStorage.getItem(TOKEN_KEY)
+  const token = getToken()
   if (token && (await isTokenValid(token))) {
     showDashboard()
     loadStatus()
   } else {
-    localStorage.removeItem(TOKEN_KEY)
+    clearToken()
     showLogin()
   }
 }
@@ -50,7 +51,7 @@ loginForm?.addEventListener('submit', async (event) => {
       return
     }
 
-    localStorage.setItem(TOKEN_KEY, data.token)
+    setToken(data.token)
     await isTokenValid(data.token)
     showDashboard()
     loadStatus()
@@ -60,12 +61,12 @@ loginForm?.addEventListener('submit', async (event) => {
 })
 
 logoutButton?.addEventListener('click', () => {
-  localStorage.removeItem(TOKEN_KEY)
+  clearToken()
   showLogin()
 })
 
 toggleButton?.addEventListener('click', async () => {
-  const token = localStorage.getItem(TOKEN_KEY)
+  const token = getToken()
   const currentlyEnabled = toggleButton.dataset.enabled === 'true'
 
   toggleButton.disabled = true
@@ -90,7 +91,7 @@ toggleButton?.addEventListener('click', async () => {
 
 messageForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  const token = localStorage.getItem(TOKEN_KEY)
+  const token = getToken()
   const formData = new FormData(messageForm)
 
   try {
