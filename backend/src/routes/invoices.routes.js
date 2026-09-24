@@ -55,26 +55,37 @@ router.get('/', requireAuth, async (req, res) => {
   }
 })
 
-// KPIs del día para el dashboard
+// KPIs del día (y del mes) para el dashboard
 router.get('/summary', requireAuth, async (req, res) => {
   try {
-    const start = new Date()
-    start.setHours(0, 0, 0, 0)
-    const end = new Date()
-    end.setHours(23, 59, 59, 999)
+    const now = new Date()
+    const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
+    const dayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999)
+    // Al calcularse siempre desde el día 1 del mes actual, el conteo se "reinicia" solo
+    // en cuanto cambia el mes — no hace falta ningún job ni reset manual.
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0)
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
 
-    const [result] = await Invoice.aggregate([
-      { $match: { createdAt: { $gte: start, $lte: end }, status: { $ne: 'anulada' } } },
-      { $group: { _id: null, totalSales: { $sum: '$total' }, count: { $sum: 1 } } },
+    const [[dayResult], [monthResult]] = await Promise.all([
+      Invoice.aggregate([
+        { $match: { createdAt: { $gte: dayStart, $lte: dayEnd }, status: { $ne: 'anulada' } } },
+        { $group: { _id: null, totalSales: { $sum: '$total' }, count: { $sum: 1 } } },
+      ]),
+      Invoice.aggregate([
+        { $match: { createdAt: { $gte: monthStart, $lte: monthEnd }, status: { $ne: 'anulada' } } },
+        { $group: { _id: null, totalSales: { $sum: '$total' }, count: { $sum: 1 } } },
+      ]),
     ])
 
-    const totalSales = result?.totalSales ?? 0
-    const count = result?.count ?? 0
+    const totalSales = dayResult?.totalSales ?? 0
+    const count = dayResult?.count ?? 0
+    const totalSalesMonth = monthResult?.totalSales ?? 0
 
     res.json({
       totalSalesToday: totalSales,
       invoiceCountToday: count,
       averageTicket: count > 0 ? totalSales / count : 0,
+      totalSalesMonth,
     })
   } catch {
     res.status(500).json({ error: 'No se pudo calcular el resumen del día' })

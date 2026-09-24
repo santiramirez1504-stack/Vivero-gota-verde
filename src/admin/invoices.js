@@ -232,7 +232,7 @@ if (kpisEl && tableBodyEl) {
   // ---------- KPIs ----------
 
   async function loadKpis() {
-    kpisEl.innerHTML = `<p class="sm:col-span-3 text-sm text-verde-800/60">Cargando...</p>`
+    kpisEl.innerHTML = `<p class="sm:col-span-2 lg:col-span-4 text-sm text-verde-800/60">Cargando...</p>`
     const token = getToken()
     try {
       const res = await fetch(`${API_URL}/api/invoices/summary`, { headers: { Authorization: `Bearer ${token}` } })
@@ -251,9 +251,13 @@ if (kpisEl && tableBodyEl) {
           <p class="text-xs font-semibold uppercase text-verde-600">Ticket promedio</p>
           <p class="mt-1 font-display text-2xl font-bold text-verde-900">${formatCOP(data.averageTicket)}</p>
         </div>
+        <div class="rounded-xl bg-verde-50 p-4">
+          <p class="text-xs font-semibold uppercase text-verde-600">Ventas del mes</p>
+          <p class="mt-1 font-display text-2xl font-bold text-verde-900">${formatCOP(data.totalSalesMonth)}</p>
+        </div>
       `
     } catch {
-      kpisEl.innerHTML = `<p class="sm:col-span-3 text-sm text-verde-800/60">No se pudieron cargar los indicadores.</p>`
+      kpisEl.innerHTML = `<p class="sm:col-span-2 lg:col-span-4 text-sm text-verde-800/60">No se pudieron cargar los indicadores.</p>`
     }
   }
 
