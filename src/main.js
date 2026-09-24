@@ -5,6 +5,15 @@ import './catalog.js'
 import './booking.js'
 import './gallery.js'
 
+// TODO: reemplazar por el número de WhatsApp real del vivero (con código de país, sin +, ni espacios)
+const WHATSAPP_NUMBER = '10000000000'
+
+const ctaWhatsappButton = document.querySelector('[data-cta-whatsapp]')
+ctaWhatsappButton?.addEventListener('click', () => {
+  const message = 'Hola, quiero solicitar una cotización.'
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank', 'noopener')
+})
+
 const menuButton = document.querySelector('[data-menu-button]')
 const mobileMenu = document.querySelector('[data-mobile-menu]')
 

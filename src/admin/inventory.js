@@ -10,6 +10,7 @@ const submitLabel = document.querySelector('[data-inventory-submit-label]')
 const cancelButton = document.querySelector('[data-inventory-cancel-edit]')
 const statusEl = document.querySelector('[data-inventory-status]')
 const listEl = document.querySelector('[data-inventory-list]')
+const searchInput = document.querySelector('[data-inventory-search]')
 
 if (form && listEl) {
   let items = []
@@ -73,6 +74,12 @@ if (form && listEl) {
   })
 
   cancelButton?.addEventListener('click', resetForm)
+
+  // Enter en la búsqueda no debe disparar el submit del formulario de "Agregar especie"
+  searchInput?.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') event.preventDefault()
+  })
+  searchInput?.addEventListener('input', () => renderList())
 
   listEl.addEventListener('click', async (event) => {
     const editButton = event.target.closest('[data-edit-item]')
@@ -139,7 +146,20 @@ if (form && listEl) {
       return
     }
 
-    listEl.innerHTML = items.map((item) => {
+    const query = searchInput?.value.trim().toLowerCase() ?? ''
+    const filtered = query
+      ? items.filter((item) => (
+        item.commonName?.toLowerCase().includes(query)
+        || item.scientificName?.toLowerCase().includes(query)
+      ))
+      : items
+
+    if (!filtered.length) {
+      listEl.innerHTML = `<p class="py-6 text-center text-sm text-verde-800/60">No se encontró ninguna especie con "${searchInput.value.trim()}".</p>`
+      return
+    }
+
+    listEl.innerHTML = filtered.map((item) => {
       const low = isLowStock(item)
       return `
         <div class="flex flex-wrap items-center gap-4 py-4">

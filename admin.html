@@ -139,8 +139,7 @@
       <section id="admin-catalogo" class="mt-8 scroll-mt-24 rounded-2xl border border-verde-100 bg-white p-6 sm:p-8">
         <h2 class="font-display text-xl font-bold text-verde-900">Catálogo y precios</h2>
         <p class="mt-1 text-sm text-verde-800/60">
-          Agrega, edita o elimina las plantas y macetas del catálogo público. Pega aquí la URL de
-          Cloudinary de la sección anterior para usar una foto real.
+          Agrega, edita o elimina las plantas y macetas del catálogo público, con hasta 2 fotos por producto.
         </p>
 
         <form data-product-form class="mt-6 grid gap-4 sm:grid-cols-2" novalidate>
@@ -170,9 +169,10 @@
           </div>
 
           <div>
-            <label for="prod-unidad" class="block text-sm font-medium text-verde-800">Unidad</label>
-            <input id="prod-unidad" name="unit" type="text" placeholder="unidad"
+            <label for="prod-stock" class="block text-sm font-medium text-verde-800">Stock disponible (opcional)</label>
+            <input id="prod-stock" name="stock" type="number" min="0" placeholder="Sin controlar"
               class="mt-1.5 w-full rounded-xl border border-verde-200 px-4 py-2.5 text-sm focus:border-verde-500 focus:outline-none focus:ring-2 focus:ring-verde-200" />
+            <p class="mt-1 text-xs text-verde-800/50">Si lo dejas vacío, el catálogo no muestra ningún dato de disponibilidad.</p>
           </div>
 
           <div class="sm:col-span-2">
@@ -182,16 +182,33 @@
           </div>
 
           <div>
-            <label for="prod-imagen" class="block text-sm font-medium text-verde-800">URL de imagen (Cloudinary)</label>
-            <input id="prod-imagen" name="imageUrl" type="url" placeholder="https://res.cloudinary.com/..."
-              class="mt-1.5 w-full rounded-xl border border-verde-200 px-4 py-2.5 text-sm focus:border-verde-500 focus:outline-none focus:ring-2 focus:ring-verde-200" />
-          </div>
-
-          <div>
             <label for="prod-emoji" class="block text-sm font-medium text-verde-800">Emoji de respaldo</label>
             <input id="prod-emoji" name="emoji" type="text" placeholder="🌿" maxlength="4"
               class="mt-1.5 w-full rounded-xl border border-verde-200 px-4 py-2.5 text-sm focus:border-verde-500 focus:outline-none focus:ring-2 focus:ring-verde-200" />
-            <p class="mt-1 text-xs text-verde-800/50">Se usa solo si no hay URL de imagen.</p>
+            <p class="mt-1 text-xs text-verde-800/50">Se usa solo si no hay ninguna foto.</p>
+          </div>
+
+          <div class="sm:col-span-2">
+            <p class="text-sm font-medium text-verde-800">Fotos del producto (máximo 2)</p>
+            <p class="mt-1 text-xs text-verde-800/50">La primera foto es la que ve el cliente en la cuadrícula del catálogo; al hacer clic puede ver ambas.</p>
+            <div class="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <input
+                data-product-image-input
+                type="file"
+                accept="image/*"
+                class="block w-full text-sm text-verde-800 file:mr-4 file:rounded-full file:border-0 file:bg-verde-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-verde-700 hover:file:bg-verde-200"
+              />
+              <button
+                data-product-image-upload
+                type="button"
+                disabled
+                class="inline-flex shrink-0 items-center justify-center rounded-full bg-verde-600 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-verde-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Subir
+              </button>
+            </div>
+            <p data-product-image-status class="mt-2 hidden text-sm font-medium"></p>
+            <div data-product-image-preview class="mt-3 grid grid-cols-2 gap-3 sm:w-64"></div>
           </div>
 
           <div class="sm:col-span-2 flex items-center gap-3">
@@ -407,7 +424,7 @@
               class="mt-1.5 w-full rounded-xl border border-verde-200 px-4 py-2.5 text-sm focus:border-verde-500 focus:outline-none focus:ring-2 focus:ring-verde-200"></textarea>
           </div>
 
-          <div class="sm:col-span-2 flex items-center gap-3">
+          <div class="sm:col-span-2 flex flex-wrap items-center gap-3">
             <button type="submit"
               class="rounded-full bg-verde-600 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-verde-700">
               <span data-inventory-submit-label>Agregar especie</span>
@@ -415,6 +432,9 @@
             <button type="button" data-inventory-cancel-edit class="hidden rounded-full border border-verde-200 px-6 py-2.5 text-sm font-semibold text-verde-700 hover:bg-verde-100">
               Cancelar edición
             </button>
+
+            <input type="text" data-inventory-search placeholder="Buscar especie por nombre..." autocomplete="off"
+              class="ml-auto w-full rounded-full border border-verde-200 px-4 py-2.5 text-sm focus:border-verde-500 focus:outline-none focus:ring-2 focus:ring-verde-200 sm:w-64" />
           </div>
 
           <p data-inventory-status class="sm:col-span-2 hidden text-sm font-medium"></p>

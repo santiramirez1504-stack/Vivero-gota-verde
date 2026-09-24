@@ -9,6 +9,21 @@ const WHATSAPP_NUMBER = '10000000000'
 
 const filtersEl = document.querySelector('[data-filters]')
 const gridEl = document.querySelector('[data-product-grid]')
+const searchInput = document.querySelector('[data-catalog-search]')
+
+const productLightboxEl = document.querySelector('[data-product-lightbox]')
+const productLightboxOverlay = document.querySelector('[data-product-lightbox-overlay]')
+const productLightboxClose = document.querySelector('[data-product-lightbox-close]')
+const productLightboxCategory = document.querySelector('[data-product-lightbox-category]')
+const productLightboxTitle = document.querySelector('[data-product-lightbox-title]')
+const productLightboxDescription = document.querySelector('[data-product-lightbox-description]')
+const productLightboxPrice = document.querySelector('[data-product-lightbox-price]')
+const productLightboxMedia = document.querySelector('[data-product-lightbox-media]')
+const productLightboxThumbs = document.querySelector('[data-product-lightbox-thumbs]')
+const productLightboxPrev = document.querySelector('[data-product-lightbox-prev]')
+const productLightboxNext = document.querySelector('[data-product-lightbox-next]')
+const productLightboxAdd = document.querySelector('[data-product-lightbox-add]')
+
 const cartButton = document.querySelector('[data-cart-button]')
 const cartClose = document.querySelector('[data-cart-close]')
 const cartOverlay = document.querySelector('[data-cart-overlay]')
@@ -25,6 +40,8 @@ if (filtersEl && gridEl) {
   let activeCategory = 'todos'
   let cart = loadCart()
   let products = []
+  let currentProduct = null
+  let currentImageIndex = 0
 
   renderFilters()
   renderCart()
@@ -40,9 +57,35 @@ if (filtersEl && gridEl) {
   })
 
   gridEl.addEventListener('click', (event) => {
-    const button = event.target.closest('[data-add]')
-    if (!button) return
-    addToCart(button.dataset.add)
+    const addButton = event.target.closest('[data-add]')
+    const openButton = event.target.closest('[data-open-product]')
+    if (addButton) addToCart(addButton.dataset.add)
+    if (openButton) openProductLightbox(openButton.dataset.openProduct)
+  })
+
+  productLightboxClose?.addEventListener('click', closeProductLightbox)
+  productLightboxOverlay?.addEventListener('click', closeProductLightbox)
+  productLightboxPrev?.addEventListener('click', () => stepProduct(-1))
+  productLightboxNext?.addEventListener('click', () => stepProduct(1))
+  productLightboxThumbs?.addEventListener('click', (event) => {
+    const thumb = event.target.closest('[data-product-thumb]')
+    if (!thumb) return
+    currentImageIndex = Number(thumb.dataset.productThumb)
+    renderProductMedia()
+    renderProductThumbs()
+  })
+  productLightboxAdd?.addEventListener('click', () => {
+    if (!currentProduct) return
+    const id = currentProduct._id
+    closeProductLightbox()
+    addToCart(id)
+  })
+
+  document.addEventListener('keydown', (event) => {
+    if (productLightboxEl?.classList.contains('hidden')) return
+    if (event.key === 'Escape') closeProductLightbox()
+    if (event.key === 'ArrowLeft') stepProduct(-1)
+    if (event.key === 'ArrowRight') stepProduct(1)
   })
 
   cartItemsEl?.addEventListener('click', (event) => {
@@ -53,6 +96,8 @@ if (filtersEl && gridEl) {
     if (minus) changeQty(minus.dataset.qtyMinus, -1)
     if (remove) removeFromCart(remove.dataset.remove)
   })
+
+  searchInput?.addEventListener('input', renderGrid)
 
   cartButton?.addEventListener('click', openCart)
   cartClose?.addEventListener('click', closeCart)
@@ -96,6 +141,20 @@ if (filtersEl && gridEl) {
     return CATEGORIES.find((c) => c.id === id)?.label ?? id
   }
 
+  // Los productos creados antes de admitir varias fotos solo tienen "imageUrl" (una sola foto)
+  function productImages(p) {
+    if (p.images?.length) return p.images
+    if (p.imageUrl) return [{ url: p.imageUrl }]
+    return []
+  }
+
+  // Si el vivero no cargó stock para este producto, no se muestra ningún dato de disponibilidad
+  function stockLabel(p) {
+    return p.stock !== null && p.stock !== undefined
+      ? `<span class="block text-xs font-semibold text-verde-600">${p.stock} disponibles</span>`
+      : ''
+  }
+
   function renderFilters() {
     filtersEl.innerHTML = CATEGORIES.map((cat) => `
       <button
@@ -111,32 +170,112 @@ if (filtersEl && gridEl) {
   }
 
   function renderGrid() {
-    const items = activeCategory === 'todos'
+    let items = activeCategory === 'todos'
       ? products
       : products.filter((p) => p.category === activeCategory)
 
+    const query = searchInput?.value.trim().toLowerCase() ?? ''
+    if (query) {
+      items = items.filter((p) => p.name?.toLowerCase().includes(query))
+    }
+
     if (!items.length) {
-      gridEl.innerHTML = `<p class="col-span-full py-10 text-center text-verde-800/60">Todavía no hay productos en esta categoría.</p>`
+      gridEl.innerHTML = query
+        ? `<p class="col-span-full py-10 text-center text-verde-800/60">No se encontró ninguna planta con "${searchInput.value.trim()}".</p>`
+        : `<p class="col-span-full py-10 text-center text-verde-800/60">Todavía no hay productos en esta categoría.</p>`
       return
     }
 
-    gridEl.innerHTML = items.map((p) => `
+    gridEl.innerHTML = items.map((p) => {
+      const cover = productImages(p)[0]
+      return `
       <article class="rounded-2xl border border-verde-100 bg-white p-5 flex flex-col hover:shadow-lg transition-shadow">
-        <div class="aspect-square rounded-xl bg-gradient-to-br from-verde-100 to-verde-300 flex items-center justify-center text-6xl overflow-hidden">
-          ${p.imageUrl
-            ? `<img src="${p.imageUrl}" alt="${p.name}" class="h-full w-full object-cover" />`
-            : p.emoji}
-        </div>
-        <span class="mt-4 text-xs font-semibold uppercase tracking-wide text-verde-600">${categoryLabel(p.category)}</span>
-        <h3 class="mt-1 font-display font-bold text-lg text-verde-900">${p.name}</h3>
+        <button type="button" data-open-product="${p._id}" class="block text-left">
+          <div class="aspect-square rounded-xl bg-gradient-to-br from-verde-100 to-verde-300 flex items-center justify-center text-6xl overflow-hidden">
+            ${cover
+              ? `<img src="${cover.url}" alt="${p.name}" class="h-full w-full object-cover" />`
+              : p.emoji}
+          </div>
+          <span class="mt-4 block text-xs font-semibold uppercase tracking-wide text-verde-600">${categoryLabel(p.category)}</span>
+          <h3 class="mt-1 font-display font-bold text-lg text-verde-900">${p.name}</h3>
+        </button>
         <p class="mt-1 text-sm text-verde-800/70 flex-1">${p.description}</p>
         <div class="mt-4 flex items-center justify-between gap-2">
-          <span class="font-display font-bold text-verde-700">${formatPrice(p.price)} <span class="text-xs font-normal text-verde-800/50">/ ${p.unit}</span></span>
+          <span class="font-display font-bold text-verde-700">
+            ${formatPrice(p.price)}
+            ${stockLabel(p)}
+          </span>
           <button type="button" data-add="${p._id}" class="rounded-full bg-verde-600 px-4 py-2 text-sm font-semibold text-white hover:bg-verde-700 transition-colors">
             Agregar
           </button>
         </div>
       </article>
+    `
+    }).join('')
+  }
+
+  function openProductLightbox(id) {
+    currentProduct = products.find((p) => p._id === id)
+    if (!currentProduct) return
+    currentImageIndex = 0
+    if (productLightboxCategory) productLightboxCategory.textContent = categoryLabel(currentProduct.category)
+    if (productLightboxTitle) productLightboxTitle.textContent = currentProduct.name
+    if (productLightboxDescription) productLightboxDescription.textContent = currentProduct.description
+    if (productLightboxPrice) {
+      const stock = currentProduct.stock !== null && currentProduct.stock !== undefined
+        ? `<span class="ml-2 text-sm font-semibold text-verde-600">${currentProduct.stock} disponibles</span>`
+        : ''
+      productLightboxPrice.innerHTML = `${formatPrice(currentProduct.price)}${stock}`
+    }
+    renderProductMedia()
+    renderProductThumbs()
+    productLightboxEl?.classList.remove('hidden')
+    document.body.classList.add('overflow-hidden')
+  }
+
+  function closeProductLightbox() {
+    productLightboxEl?.classList.add('hidden')
+    document.body.classList.remove('overflow-hidden')
+    currentProduct = null
+  }
+
+  function stepProduct(delta) {
+    if (!currentProduct) return
+    const images = productImages(currentProduct)
+    if (images.length <= 1) return
+    currentImageIndex = (currentImageIndex + delta + images.length) % images.length
+    renderProductMedia()
+    renderProductThumbs()
+  }
+
+  function renderProductMedia() {
+    if (!currentProduct || !productLightboxMedia) return
+    const images = productImages(currentProduct)
+    const image = images[currentImageIndex]
+    productLightboxMedia.innerHTML = image
+      ? `<img src="${image.url}" alt="${currentProduct.name}" class="max-h-full max-w-full object-contain" />`
+      : `<span>${currentProduct.emoji || '🌿'}</span>`
+
+    const showNav = images.length > 1
+    productLightboxPrev?.classList.toggle('hidden', !showNav)
+    productLightboxNext?.classList.toggle('hidden', !showNav)
+  }
+
+  function renderProductThumbs() {
+    if (!currentProduct || !productLightboxThumbs) return
+    const images = productImages(currentProduct)
+    if (images.length <= 1) {
+      productLightboxThumbs.innerHTML = ''
+      return
+    }
+    productLightboxThumbs.innerHTML = images.map((image, index) => `
+      <button
+        type="button"
+        data-product-thumb="${index}"
+        class="flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg transition-colors ${
+          index === currentImageIndex ? 'ring-2 ring-verde-600' : 'bg-verde-100 hover:bg-verde-200'
+        }"
+      ><img src="${image.url}" alt="" class="h-full w-full object-cover" /></button>
     `).join('')
   }
 
@@ -153,13 +292,13 @@ if (filtersEl && gridEl) {
         ? entries.map((item) => `
           <div class="flex items-center gap-3">
             <div class="h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg bg-verde-100 flex items-center justify-center text-2xl">
-              ${item.product.imageUrl
-                ? `<img src="${item.product.imageUrl}" alt="${item.product.name}" class="h-full w-full object-cover" />`
+              ${productImages(item.product)[0]
+                ? `<img src="${productImages(item.product)[0].url}" alt="${item.product.name}" class="h-full w-full object-cover" />`
                 : item.product.emoji}
             </div>
             <div class="flex-1 min-w-0">
               <p class="font-semibold text-verde-900 text-sm truncate">${item.product.name}</p>
-              <p class="text-xs text-verde-800/60">${formatPrice(item.product.price)} / ${item.product.unit}</p>
+              <p class="text-xs text-verde-800/60">${formatPrice(item.product.price)}</p>
             </div>
             <div class="flex items-center gap-2">
               <button type="button" data-qty-minus="${item.product._id}" class="h-7 w-7 rounded-full border border-verde-200 text-verde-700 hover:bg-verde-100">−</button>
