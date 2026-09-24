@@ -17,6 +17,7 @@ const submitLabel = document.querySelector('[data-product-submit-label]')
 const cancelButton = document.querySelector('[data-product-cancel-edit]')
 const statusEl = document.querySelector('[data-product-status]')
 const listEl = document.querySelector('[data-product-list]')
+const searchInput = document.querySelector('[data-product-search]')
 
 const imageInput = document.querySelector('[data-product-image-input]')
 const imageUploadButton = document.querySelector('[data-product-image-upload]')
@@ -135,6 +136,12 @@ if (form && listEl) {
 
   cancelButton?.addEventListener('click', resetForm)
 
+  // Enter en la búsqueda no debe disparar el submit del formulario de "Agregar producto"
+  searchInput?.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') event.preventDefault()
+  })
+  searchInput?.addEventListener('input', () => renderList())
+
   listEl.addEventListener('click', async (event) => {
     const editButton = event.target.closest('[data-edit-product]')
     const deleteButton = event.target.closest('[data-delete-product]')
@@ -189,7 +196,17 @@ if (form && listEl) {
       return
     }
 
-    listEl.innerHTML = products.map((p) => {
+    const query = searchInput?.value.trim().toLowerCase() ?? ''
+    const filtered = query
+      ? products.filter((p) => p.name?.toLowerCase().includes(query))
+      : products
+
+    if (!filtered.length) {
+      listEl.innerHTML = `<p class="py-6 text-center text-sm text-verde-800/60">No se encontró ningún producto con "${searchInput.value.trim()}".</p>`
+      return
+    }
+
+    listEl.innerHTML = filtered.map((p) => {
       const cover = productImages(p)[0]
       return `
       <div class="flex flex-wrap items-center gap-4 py-4">
